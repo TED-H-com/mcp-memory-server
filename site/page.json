@@ -1,5 +1,5 @@
 {
-  "repo": "teddashh/mcp-memory-server",
+  "repo": "TED-H-com/mcp-memory-server",
   "slug": "mcp-memory-server",
   "name": "mcp-memory-server",
   "mark": "MM",
@@ -44,7 +44,7 @@
       }
     },
     "secondary": {
-      "href": "https://github.com/teddashh/mcp-memory-server",
+      "href": "https://github.com/TED-H-com/mcp-memory-server",
       "label": {
         "en": "View source",
         "zh": "查看原始碼"
@@ -382,14 +382,14 @@
       "zh": "需要 Python 3.11 以上，以及 bash 或 zsh。伺服器不會自己建資料庫，所以要先對應一個工作區，並建立一次 memory.db。這些指令已在 2026-09-30 照原樣實際跑過。"
     },
     "primary": {
-      "href": "https://github.com/teddashh/mcp-memory-server/blob/master/README.md#quick-start",
+      "href": "https://github.com/TED-H-com/mcp-memory-server/blob/master/README.md#quick-start",
       "label": {
         "en": "Full setup in the README",
         "zh": "README 的完整步驟"
       }
     },
     "secondary": {
-      "href": "https://github.com/teddashh/mcp-memory-server/blob/master/README.zh-TW.md#快速開始",
+      "href": "https://github.com/TED-H-com/mcp-memory-server/blob/master/README.zh-TW.md#快速開始",
       "label": {
         "en": "中文設定說明",
         "zh": "中文設定說明"
@@ -405,7 +405,7 @@
           "en": "setup_config.py is optional; it writes paths, an Oracle wallet connection, and an OpenAI key to ~/.mcp-memory/config.json.",
           "zh": "setup_config.py 可以不跑；它會把路徑、Oracle wallet 連線與 OpenAI 金鑰寫進 ~/.mcp-memory/config.json。"
         },
-        "code": "git clone https://github.com/teddashh/mcp-memory-server.git\ncd mcp-memory-server\npip install -e ."
+        "code": "git clone https://github.com/TED-H-com/mcp-memory-server.git\ncd mcp-memory-server\npip install -e ."
       },
       {
         "title": {
@@ -558,7 +558,7 @@
   ],
   "links": [
     {
-      "href": "https://github.com/teddashh/mcp-memory-server/blob/master/README.zh-TW.md",
+      "href": "https://github.com/TED-H-com/mcp-memory-server/blob/master/README.zh-TW.md",
       "label": {
         "en": "中文 README",
         "zh": "中文 README"

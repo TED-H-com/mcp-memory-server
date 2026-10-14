@@ -4,7 +4,7 @@
 
 An MCP server that gives AI agents typed long-term memory (decisions, resolved issues, open questions, knowledge) in one SQLite file per workspace, with salience ranking and optional Oracle-backed vector search and audit queries.
 
-**Project page:** https://teddashh.github.io/mcp-memory-server/
+**Project page:** https://ted-h-com.github.io/mcp-memory-server/
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](#license)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-green.svg)](https://python.org)
@@ -31,7 +31,7 @@ Requires Python 3.11+.
 ### 1. Install
 
 ```bash
-git clone https://github.com/teddashh/mcp-memory-server.git
+git clone https://github.com/TED-H-com/mcp-memory-server.git
 cd mcp-memory-server
 pip install -e .              # or: pip install -e ".[embeddings]" for OpenAI embeddings
 python setup_config.py        # optional; press Enter to keep the defaults

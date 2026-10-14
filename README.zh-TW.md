@@ -4,7 +4,7 @@
 
 替 AI agent 提供分類型長期記憶的 MCP 伺服器：決策、已解決的問題、待解問題與知識，依工作區各存成一個 SQLite 檔，依重要度（salience）排序，也可以選擇接上 Oracle 做向量搜尋與稽核查詢。
 
-**專案介紹頁：** https://teddashh.github.io/mcp-memory-server/?lang=zh-TW
+**專案介紹頁：** https://ted-h-com.github.io/mcp-memory-server/?lang=zh-TW
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](#授權)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-green.svg)](https://python.org)
@@ -31,7 +31,7 @@ AI agent 沒有狀態。每開一個新 session 都從零開始，上一次做�
 ### 1. 安裝
 
 ```bash
-git clone https://github.com/teddashh/mcp-memory-server.git
+git clone https://github.com/TED-H-com/mcp-memory-server.git
 cd mcp-memory-server
 pip install -e .              # 要用 OpenAI embedding 就改成：pip install -e ".[embeddings]"
 python setup_config.py        # 選擇性；直接按 Enter 會保留預設值
