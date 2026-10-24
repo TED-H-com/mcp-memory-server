@@ -18,8 +18,6 @@ Usage:
 """
 import json
 import sys
-import time
-import functools
 from datetime import datetime
 from pathlib import Path
 
@@ -326,30 +324,7 @@ def run_decay(workspace_id: str = None, decay_factor: float = 0.95, stale_days: 
 # SEARCH TOOLS: Oracle vector + text
 # ============================================================
 
-def ttl_cache(maxsize=128, ttl=60):
-    """Simple in-memory TTL cache decorator."""
-    def decorator(func):
-        cache = {}
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            key = (args, frozenset(kwargs.items()))
-            now = time.time()
-            if key in cache:
-                result, timestamp = cache[key]
-                if now - timestamp < ttl:
-                    return result
-            result = func(*args, **kwargs)
-            if len(cache) >= maxsize:
-                # Naive eviction: clear cache if too big
-                cache.clear()
-            cache[key] = (result, now)
-            return result
-        return wrapper
-    return decorator
-
-
 @mcp.tool()
-@ttl_cache(maxsize=128, ttl=60)
 def memory_search(query: str, domain: str = "all", limit: int = 10) -> str:
     """Semantic search across ALL workspaces via Oracle.
     domain: 'all', 'work', or 'personal'. Falls back to text search if vector not available."""
@@ -392,7 +367,7 @@ def memory_search(query: str, domain: str = "all", limit: int = 10) -> str:
 def _vector_search(cur, embedding, domain, limit, conn):
     """Execute vector similarity search on Oracle."""
     import array
-    vec = array.array('f', embedding)
+    vec = array.array('d', embedding)
 
     sql = """
         SELECT k.id, k.title, k.tags, w.workspace_id, w.domain,
@@ -421,9 +396,13 @@ def _vector_search(cur, embedding, domain, limit, conn):
         return f"Vector search error: {e}"
 
 
-@functools.lru_cache(maxsize=128)
+_embedding_cache = {}
+
 def _get_embedding(text: str):
     """Generate embedding via configured provider. Returns list of floats or None."""
+    if text in _embedding_cache:
+        return _embedding_cache[text]
+
     from .config import load_config
     config = load_config()
     provider = config["embedding"]["provider"]
@@ -436,7 +415,11 @@ def _get_embedding(text: str):
                 model=config["embedding"]["model"],
                 input=text,
             )
-            return resp.data[0].embedding
+            emb = resp.data[0].embedding
+            if len(_embedding_cache) >= 128:
+                _embedding_cache.clear()
+            _embedding_cache[text] = emb
+            return emb
         except Exception:
             return None
 
