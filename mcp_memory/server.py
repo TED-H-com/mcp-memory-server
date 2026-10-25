@@ -400,12 +400,14 @@ _embedding_cache = {}
 
 def _get_embedding(text: str):
     """Generate embedding via configured provider. Returns list of floats or None."""
-    if text in _embedding_cache:
-        return _embedding_cache[text]
-
     from .config import load_config
     config = load_config()
     provider = config["embedding"]["provider"]
+    model = config["embedding"]["model"]
+
+    cache_key = (provider, model, text)
+    if cache_key in _embedding_cache:
+        return _embedding_cache[cache_key]
 
     if provider == "openai" and config["embedding"]["api_key"]:
         try:
@@ -418,7 +420,7 @@ def _get_embedding(text: str):
             emb = resp.data[0].embedding
             if len(_embedding_cache) >= 128:
                 _embedding_cache.clear()
-            _embedding_cache[text] = emb
+            _embedding_cache[cache_key] = emb
             return emb
         except Exception:
             return None
