@@ -14,7 +14,7 @@ An MCP server that gives AI agents typed long-term memory (decisions, resolved i
 
 > **Status:** v0.1.0, published on 2026-03-31 and not actively maintained since. The tools still load on current FastMCP (checked with fastmcp 4.0.10), but the server expects databases it does not create. Read [Status and limits](#status-and-limits) before you build on it.
 
-[Quick start](#quick-start) · [Tools](#mcp-tools-18) · [Storage](#how-memory-is-stored) · [Salience](#salience) · [CJK](#cjk-aware-session-check) · [Configuration](#configuration) · [Status](#status-and-limits)
+[Quick start](#quick-start) · [Tools](#mcp-tools-18) · [Storage](#how-memory-is-stored) · [Salience](#salience) · [CJK](#cjk-aware-session-check) · [Configuration](#configuration) · [Status](#status-and-limits) · [MCP Protocol Reference](docs/mcp_reference.md)
 
 ---
 
@@ -120,6 +120,8 @@ In HTTP mode one server process serves every client, so the workspace comes from
 ---
 
 ## MCP tools (18)
+
+For detailed MCP tool definitions, input schemas, resource endpoints, and server configuration, see the [MCP Protocol Reference](docs/mcp_reference.md).
 
 ### Write
 
