@@ -396,11 +396,18 @@ def _vector_search(cur, embedding, domain, limit, conn):
         return f"Vector search error: {e}"
 
 
+_embedding_cache = {}
+
 def _get_embedding(text: str):
     """Generate embedding via configured provider. Returns list of floats or None."""
     from .config import load_config
     config = load_config()
     provider = config["embedding"]["provider"]
+    model = config["embedding"]["model"]
+
+    cache_key = (provider, model, text)
+    if cache_key in _embedding_cache:
+        return _embedding_cache[cache_key]
 
     if provider == "openai" and config["embedding"]["api_key"]:
         try:
@@ -410,7 +417,11 @@ def _get_embedding(text: str):
                 model=config["embedding"]["model"],
                 input=text,
             )
-            return resp.data[0].embedding
+            emb = resp.data[0].embedding
+            if len(_embedding_cache) >= 128:
+                _embedding_cache.clear()
+            _embedding_cache[cache_key] = emb
+            return emb
         except Exception:
             return None
 
