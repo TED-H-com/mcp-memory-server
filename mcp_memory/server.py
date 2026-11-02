@@ -45,6 +45,7 @@ mcp = FastMCP(
 def memory_store(content: str, type: str = "auto", tags: str = "", priority: int = 2) -> str:
     """Store a memory. Type: 'decision', 'resolved', 'question', 'knowledge', or 'auto' (auto-detect).
     For decisions: content = 'what | why | how'. For questions: priority 1=high, 2=medium, 3=low."""
+    priority = max(1, min(3, priority))
     if type == "auto":
         cl = content.lower()
         if any(w in cl for w in ["decided", "chose", "decision", "will use", "going with"]):
@@ -104,6 +105,7 @@ def memory_record_resolved(what: str, how: str = "", tags: str = "") -> str:
 @mcp.tool()
 def memory_record_question(question: str, context: str = "", tags: str = "", priority: int = 2) -> str:
     """Record an open question. Priority: 1=high, 2=medium, 3=low."""
+    priority = max(1, min(3, priority))
     conn = get_sqlite()
     rid = new_id()
     conn.execute(
@@ -136,6 +138,10 @@ def memory_record_knowledge(title: str, content: str = "", tags: str = "") -> st
 @mcp.tool()
 def memory_list(type: str = "all", workspace: str = "current", limit: int = 20) -> str:
     """List recent memories. Type: 'all', 'decisions', 'resolved', 'questions', 'knowledge'."""
+    limit = max(1, min(100, limit))
+    valid_types = {"all", "decisions", "resolved", "questions", "knowledge"}
+    if type not in valid_types:
+        type = "all"
     ws = detect_workspace() if workspace == "current" else workspace
     conn = get_sqlite(ws)
     results = []
@@ -328,6 +334,7 @@ def run_decay(workspace_id: str = None, decay_factor: float = 0.95, stale_days: 
 def memory_search(query: str, domain: str = "all", limit: int = 10) -> str:
     """Semantic search across ALL workspaces via Oracle.
     domain: 'all', 'work', or 'personal'. Falls back to text search if vector not available."""
+    limit = max(1, min(100, limit))
     oracle = get_oracle()
     if oracle is None:
         return _local_text_search(query, limit)
@@ -476,6 +483,7 @@ def memory_audit_search(
 ) -> str:
     """Search the audit trail log. Filter by keyword, date (YYYY-MM-DD), sender, importance (H/M/L).
     Searches across subject, from_name, category, what, keywords fields."""
+    limit = max(1, min(100, limit))
     oracle = get_oracle()
     if oracle is None:
         return "Audit trail requires cloud DB connection"
@@ -591,6 +599,7 @@ def memory_audit_stats(date: str = "", workspace: str = "all") -> str:
 def memory_daily_report(date: str = "", workspace: str = "all", limit: int = 7) -> str:
     """Get daily reports. Filter by date (YYYY-MM-DD) or get recent N days.
     Shows email counts, calendar events, high-priority items, and narrative summary."""
+    limit = max(1, min(100, limit))
     oracle = get_oracle()
     if oracle is None:
         return "Daily reports require cloud DB connection"
@@ -653,6 +662,7 @@ def memory_activity_log(
 ) -> str:
     """View agent activity log. Filter by agent name, action type, or workspace.
     Shows what agents (schedulers, dispatchers, etc.) have been doing."""
+    limit = max(1, min(100, limit))
     oracle = get_oracle()
     if oracle is None:
         return "Activity log requires cloud DB connection"
