@@ -180,7 +180,18 @@ def memory_get(id: str, workspace: str = "current") -> str:
     ws = detect_workspace() if workspace == "current" else workspace
     conn = get_sqlite(ws)
 
-    for table in ["decisions", "resolved", "open_questions", "knowledge_items"]:
+    # Create a prepared union query to find which table contains the ID
+    # Since schemas differ, we just return the table name, then fetch the full row
+    table_query = """
+        SELECT 'decisions' as t FROM decisions WHERE id = ?
+        UNION ALL SELECT 'resolved' FROM resolved WHERE id = ?
+        UNION ALL SELECT 'open_questions' FROM open_questions WHERE id = ?
+        UNION ALL SELECT 'knowledge_items' FROM knowledge_items WHERE id = ?
+    """
+    table_row = conn.execute(table_query, (id, id, id, id)).fetchone()
+
+    if table_row:
+        table = table_row['t']
         row = conn.execute(f"SELECT * FROM {table} WHERE id = ?", (id,)).fetchone()
         if row:
             _touch_access(conn, table, id)
@@ -198,12 +209,16 @@ def memory_get_summary(workspace: str = "current") -> str:
     ws = detect_workspace() if workspace == "current" else workspace
     conn = get_sqlite(ws)
     try:
-        d = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
-        r = conn.execute("SELECT COUNT(*) FROM resolved").fetchone()[0]
-        q = conn.execute("SELECT COUNT(*) FROM open_questions").fetchone()[0]
-        k = conn.execute("SELECT COUNT(*) FROM knowledge_items").fetchone()[0]
-        kp = conn.execute("SELECT COUNT(*) FROM knowledge_items WHERE written_to_obsidian=0").fetchone()[0]
-        dl = conn.execute("SELECT COUNT(*) FROM daily_logs").fetchone()[0]
+        counts = conn.execute("""
+            SELECT
+                (SELECT COUNT(*) FROM decisions) as d,
+                (SELECT COUNT(*) FROM resolved) as r,
+                (SELECT COUNT(*) FROM open_questions) as q,
+                (SELECT COUNT(*) FROM knowledge_items) as k,
+                (SELECT COUNT(*) FROM knowledge_items WHERE written_to_obsidian=0) as kp,
+                (SELECT COUNT(*) FROM daily_logs) as dl
+        """).fetchone()
+        d, r, q, k, kp, dl = counts['d'], counts['r'], counts['q'], counts['k'], counts['kp'], counts['dl']
     except Exception as e:
         return f"Error [{ws}]: {e}"
     finally:
@@ -440,6 +455,9 @@ def _local_text_search(query: str, limit: int) -> str:
     except FileNotFoundError:
         return "No workspace map found"
 
+    query_lower = query.lower()
+    query_like = f"%{query_lower}%"
+
     for ws_id in list(ws_map.keys()) + ["claude-setup"]:
         try:
             conn = get_sqlite(ws_id)
@@ -448,7 +466,7 @@ def _local_text_search(query: str, limit: int) -> str:
                    FROM knowledge_items
                    WHERE LOWER(title) LIKE ? OR LOWER(content) LIKE ?
                    ORDER BY sal DESC LIMIT ?""",
-                (f"%{query.lower()}%", f"%{query.lower()}%", limit),
+                (query_like, query_like, limit),
             ).fetchall()
             for r in rows:
                 # Touch access for search hits
