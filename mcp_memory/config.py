@@ -29,9 +29,13 @@ _DEFAULT = {
     },
 }
 
+_cached_config = None
 
 def load_config() -> dict:
     """Load config from file, merge with defaults."""
+    global _cached_config
+    if _cached_config is not None:
+        return _cached_config
     config = _DEFAULT.copy()
 
     if CONFIG_FILE.exists():
@@ -47,6 +51,7 @@ def load_config() -> dict:
     if os.environ.get("OPENAI_API_KEY"):
         config["embedding"]["api_key"] = os.environ["OPENAI_API_KEY"]
 
+    _cached_config = config
     return config
 
 
