@@ -432,7 +432,6 @@ Shows what agents (schedulers, dispatchers, etc.) have been doing.
 }
 ```
 
-
 ## Resources
 
 The MCP Memory Server does not expose any resource endpoints or resource templates. Memory interactions are exclusively handled via the tools documented above.

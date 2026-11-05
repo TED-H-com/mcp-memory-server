@@ -15,7 +15,11 @@ from .config import load_config
 # ============================================================
 
 def detect_workspace() -> str:
-    """Detect current workspace from cwd or env."""
+    """
+    Detect the current active workspace ID.
+    Checks MEMORY_WORKSPACE env var first, then attempts to match the current
+    working directory against the workspace map in config.
+    """
     ws = os.environ.get("MEMORY_WORKSPACE")
     if ws:
         return ws
@@ -48,7 +52,10 @@ def detect_workspace() -> str:
 # ============================================================
 
 def get_sqlite(workspace_id: str = None) -> sqlite3.Connection:
-    """Get SQLite connection for a workspace."""
+    """
+    Get a SQLite connection for the specified or detected workspace.
+    Returns a connection configured with sqlite3.Row row_factory.
+    """
     ws_id = workspace_id or detect_workspace()
     config = load_config()
 
@@ -74,10 +81,12 @@ def get_sqlite(workspace_id: str = None) -> sqlite3.Connection:
 
 
 def new_id() -> str:
+    """Generate a new 8-character ID for a memory record."""
     return str(uuid.uuid4())[:8]
 
 
 def tags_to_json(tags: str) -> str:
+    """Convert a comma-separated string of tags into a JSON array string."""
     return json.dumps([t.strip() for t in tags.split(",") if t.strip()])
 
 
