@@ -107,6 +107,19 @@ Oracle: not connected
 Embeddings: none
 ```
 
+### 4. Basic Usage Examples
+
+Once connected, agents can store and search memories automatically. Here is a manual example of using the memory tools:
+
+- **Store a decision:**
+  `memory_store(content="decided to use PostgreSQL for user data | it offers better relational integrity | migrating via Alembic")`
+- **Store a resolved issue:**
+  `memory_store(content="fixed the auth token expiration bug | updated the JWT lifespan to 2 hours in config.json")`
+- **Search memories:**
+  `memory_search(query="PostgreSQL migration")`
+- **List recent items:**
+  `memory_list(type="decisions", limit=5)`
+
 ### Other transports and the decay job
 
 ```bash
@@ -127,7 +140,7 @@ For detailed MCP tool definitions, input schemas, resource endpoints, and server
 
 | Tool | Description |
 |------|-------------|
-| `memory_store` | Store with automatic type detection: decision, resolved, question, or knowledge |
+| `memory_store` | Store a memory. Type: 'decision', 'resolved', 'question', 'knowledge', or 'auto' (auto-detect). For decisions: content = 'what \| why \| how'. For questions: priority 1=high, 2=medium, 3=low. |
 | `memory_record_decision` | Record a decision: what, why, how |
 | `memory_record_resolved` | Record a resolved issue: what, how |
 | `memory_record_question` | Record an open question with priority 1 (high) to 3 (low) |
@@ -332,6 +345,12 @@ Vector search needs an Oracle database with AI Vector Search (`VECTOR_DISTANCE`)
 - `setup_config.py` asks for the workspace root, the `claude-setup` folder, the Oracle wallet settings, and the embedding provider, then writes the file. It stores passwords and API keys in plain text, so prefer the environment variables for secrets.
 
 ---
+
+## Core Modules
+
+- `mcp_memory.server`: Exposes the MCP tools (store, list, get, delete, reinforce, search, audit, status, etc.) via `fastmcp`.
+- `mcp_memory.db`: Handles local SQLite connections, workspace detection, and Oracle cloud DB connections for vector search and audit logging.
+- `mcp_memory.config`: Manages server configuration from `~/.mcp-memory/config.json` and environment variables.
 
 ## Design choices
 

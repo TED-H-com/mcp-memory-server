@@ -58,6 +58,7 @@ def save_config(config: dict):
 
 
 def _deep_merge(base: dict, override: dict):
+    """Recursively merge override dictionary into base dictionary."""
     for k, v in override.items():
         if k in base and isinstance(base[k], dict) and isinstance(v, dict):
             _deep_merge(base[k], v)
